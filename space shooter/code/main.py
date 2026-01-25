@@ -38,6 +38,8 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            print(event.button)
 
     #draw the game
     window.fill("darkgray")
