@@ -47,7 +47,14 @@ class Star(pygame.sprite.Sprite):
         super().__init__(groups)
         self.image = surf
         self.rect = self.image.get_frect(center = (randint(0,WINDOW_WIDTH),randint(0,WINDOW_HEIGHT)))
+        self.speed = background_speed
 
+    def update(self, dt):
+        if self.rect.y >= WINDOW_HEIGHT:
+            self.rect.y = -100
+            self.rect.x = randint(0, WINDOW_WIDTH)
+        self.rect.y += self.speed * dt
+        
 class Laser(pygame.sprite.Sprite):
     def __init__(self, surf, pos, groups):
         super().__init__(groups)
@@ -61,18 +68,47 @@ class Laser(pygame.sprite.Sprite):
             self.kill()
 
 class Meteor(pygame.sprite.Sprite):
-    def __init__(self, surf, groups):
+    def __init__(self, surface, groups):
         super().__init__(groups)
-        self.image = surf
+        self.original_surface = surface
+        self.image = self.original_surface
         pos = randint(0, WINDOW_WIDTH), randint(-200, -100)
         self.rect = self.image.get_frect(center = pos)
         self.speed = randint(400, 500)
         self.direction = pygame.Vector2(uniform(-0.5, 0.5),1)
 
+        #rotation setup
+        self.rotate_speed = randint(-100, 100)
+        self.rotation = 0
+
+
+    def rotate(self, dt):
+        self.rotation += self.rotate_speed * dt
+        self.image = pygame.transform.rotate(self.original_surface, self.rotation)
+        self.rect = self.image.get_frect(center = self.rect.center)
+
     def update(self, dt):
+        self.rotate(dt)
         self.rect.center += self.direction * self.speed * dt
         if self.rect.top >= WINDOW_HEIGHT:
             self.kill()
+
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self, pos, groups):
+        super().__init__(groups)
+        self.image = explosion_images[0]
+        self.rect = self.image.get_frect(center = pos)
+        self.explosion_image = 0
+        self.speed = background_speed
+
+    def update(self, dt):
+        self.image = explosion_images[int(self.explosion_image)]
+        self.rect = self.image.get_frect(center = self.rect.center)
+        self.rect.y += self.speed * dt
+        self.explosion_image += 1*dt*100
+        if self.explosion_image >= 20:
+            self.kill()
+        
 
 def collisions():
     global run
@@ -83,6 +119,8 @@ def collisions():
         meteors = pygame.sprite.spritecollide(laser, meteor_sprites, True)
         if meteors:
             laser.kill()
+            pos = meteors[0].rect.center
+            Explosion(pos, all_sprites)
 
 def display_score():
     current_time = pygame.time.get_ticks()// 100
@@ -100,8 +138,10 @@ window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Space shooter")
 run = True
 clock = pygame.time.Clock()
+background_speed = 350
 
 #import
+explosion_images = [pygame.transform.scale2x(pygame.image.load(join('space shooter', 'images', 'explosion', f'{x}.png'))) for x in range(21)]
 meteor_surface = pygame.image.load(join("space shooter", 'images', 'meteor.png')).convert_alpha()
 laser_surface = pygame.image.load(join("space shooter", 'images', 'laser.png')).convert_alpha()
 star_surf = pygame.image.load(join("space shooter", 'images', 'star.png')).convert_alpha()
