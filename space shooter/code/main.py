@@ -129,19 +129,26 @@ def display_score():
     window.blit(text_surface, text_rect)
     box_rect = text_rect.inflate(20, 10)
     pygame.draw.rect(window, (240, 240, 240), box_rect.move(0, -8), 5, 10)
-    
+
+def meteor_spwan():
+    meteor_spawn_timer = 1000
+    #change event time
+    if current_time % 100 == 0:
+        meteor_spawn_timer -= 10
+        if meteor_spawn_timer >= 1:
+            pygame.time.set_timer(meteor_event, meteor_spawn_timer)
 
 #general setup
 pygame.init()
-WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
-window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+WINDOW_WIDTH, WINDOW_HEIGHT = window.get_size()
 pygame.display.set_caption("Space shooter")
 run = True
 clock = pygame.time.Clock()
 background_speed = 350
 
 #import
-explosion_images = [pygame.transform.scale2x(pygame.image.load(join('space shooter', 'images', 'explosion', f'{x}.png'))) for x in range(21)]
+explosion_images = [pygame.transform.scale2x(pygame.image.load(join('space shooter', 'images', 'explosion', f'{x}.png'))).convert_alpha() for x in range(21)]
 meteor_surface = pygame.image.load(join("space shooter", 'images', 'meteor.png')).convert_alpha()
 laser_surface = pygame.image.load(join("space shooter", 'images', 'laser.png')).convert_alpha()
 star_surf = pygame.image.load(join("space shooter", 'images', 'star.png')).convert_alpha()
@@ -158,7 +165,7 @@ player = Player(all_sprites)
 
 # custom events -> metor event
 meteor_event = pygame.event.custom_type()
-pygame.time.set_timer(meteor_event, 500)
+pygame.time.set_timer(meteor_event, 100)
 
 
 while run:
@@ -169,6 +176,10 @@ while run:
             run = False
         if event.type == meteor_event:
             Meteor(meteor_surface, (all_sprites, meteor_sprites))
+
+    current_time = pygame.time.get_ticks() // 100
+    
+    meteor_spwan()
 
     #update
     all_sprites.update(dt)
