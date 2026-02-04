@@ -23,6 +23,7 @@ class Player(pygame.sprite.Sprite):
             Laser(laser_surface, self.rect.midtop, (all_sprites, laser_sprites))
             self.can_shoot = False
             self.laser_shoot_time = pygame.time.get_ticks()
+            laser_sound.play()
 
         if not self.can_shoot:
             current_time = pygame.time.get_ticks()
@@ -107,8 +108,7 @@ class Explosion(pygame.sprite.Sprite):
         self.rect.y += self.speed * dt
         self.explosion_image += 1*dt*100
         if self.explosion_image >= 20:
-            self.kill()
-        
+            self.kill()  
 
 def collisions():
     global run
@@ -121,6 +121,7 @@ def collisions():
             laser.kill()
             pos = meteors[0].rect.center
             Explosion(pos, all_sprites)
+            explosion_sound.play()
 
 def display_score():
     current_time = pygame.time.get_ticks()// 100
@@ -138,6 +139,7 @@ def meteor_spwan():
         if meteor_spawn_timer >= 1:
             pygame.time.set_timer(meteor_event, meteor_spawn_timer)
 
+
 #general setup
 pygame.init()
 window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
@@ -154,6 +156,17 @@ laser_surface = pygame.image.load(join("space shooter", 'images', 'laser.png')).
 star_surf = pygame.image.load(join("space shooter", 'images', 'star.png')).convert_alpha()
 font = pygame.font.Font(join('Space Shooter','images', 'Oxanium-Bold.ttf'), 40)
 
+laser_sound = pygame.mixer.Sound(join('space shooter', 'audio', 'laser.wav'))
+explosion_sound = pygame.mixer.Sound(join('space shooter', 'audio', 'explosion.wav'))
+game_music = pygame.mixer.Sound(join('space shooter', 'audio', 'game_music.wav'))
+
+laser_sound.set_volume(0.5)
+explosion_sound.set_volume(0.4)
+game_music.set_volume(0.4)
+
+game_music.play(loops=-1)
+
+
 
 #sprites
 all_sprites = pygame.sprite.Group()
@@ -165,7 +178,7 @@ player = Player(all_sprites)
 
 # custom events -> metor event
 meteor_event = pygame.event.custom_type()
-pygame.time.set_timer(meteor_event, 100)
+pygame.time.set_timer(meteor_event, 1000)
 
 
 while run:
@@ -176,6 +189,9 @@ while run:
             run = False
         if event.type == meteor_event:
             Meteor(meteor_surface, (all_sprites, meteor_sprites))
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                run = False
 
     current_time = pygame.time.get_ticks() // 100
     
