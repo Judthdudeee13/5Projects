@@ -19,21 +19,24 @@ class Player(pygame.sprite.Sprite):
 
         #mask
         self.mask = pygame.mask.from_surface(self.image)
-        self.mask_image = self.mask.to_surface().set_colorkey((0,0,0))
+        self.mask_image = self.mask.to_surface(setcolor=(255, 255, 255, 255), unsetcolor=(0, 0, 0, 0))
         self.got_hit = False
         self.death_time = 0
+        self.images = [self.mask_image, self.image]
+        self.frame = 0
 
     def hit(self, dt):
         if self.got_hit == True:
-            self.death_time = pygame.time.get_ticks()
-            if pygame.time.get_ticks() - self.death_time <= 3000:
-                if self.image == self.mask_image:
-                    self.image = self.original_image
-                else:
-                    self.image = self.mask_image
+            if self.death_time == 0:
+                self.death_time = pygame.time.get_ticks()
+            if pygame.time.get_ticks() - self.death_time <= 500:
+                self.frame += 10 * dt
+                print(self.frame)
+                self.image = self.images[int(self.frame)%len(self.images)]
             else:
                 self.image = self.original_image
                 self.got_hit = False
+                self.death_time = 0
 
     def laser(self):
         recent_keys = pygame.key.get_just_pressed()
@@ -156,8 +159,9 @@ def meteor_spwan():
     meteor_spawn_timer = 1000
     #change event time
     if current_time % 100 == 0:
-        meteor_spawn_timer -= 10
+        meteor_spawn_timer -= 250* (current_time//100)
         if meteor_spawn_timer >= 1:
+            
             pygame.time.set_timer(meteor_event, meteor_spawn_timer)
 
 def restart():
@@ -183,13 +187,13 @@ font = pygame.font.Font(join('Space Shooter','images', 'Oxanium-Bold.ttf'), 40)
 
 laser_sound = pygame.mixer.Sound(join('space shooter', 'audio', 'laser.wav'))
 explosion_sound = pygame.mixer.Sound(join('space shooter', 'audio', 'explosion.wav'))
-damage_sound = pygame.mixer.Sound(join('space shooter', 'audio', 'damage.ogg'))
+damage_sound = pygame.mixer.Sound(join('space shooter', 'audio', 'damage.wav'))
 game_music = pygame.mixer.Sound(join('space shooter', 'audio', 'game_music.wav'))
 
 laser_sound.set_volume(0.5)
 explosion_sound.set_volume(0.4)
-damage_sound.set_volume(1)
-game_music.set_volume(0.4)
+damage_sound.set_volume(0.75)
+game_music.set_volume(0.5)
 
 game_music.play(loops=-1)
 
