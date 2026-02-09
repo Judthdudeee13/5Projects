@@ -31,7 +31,6 @@ class Player(pygame.sprite.Sprite):
                 self.death_time = pygame.time.get_ticks()
             if pygame.time.get_ticks() - self.death_time <= 500:
                 self.frame += 10 * dt
-                print(self.frame)
                 self.image = self.images[int(self.frame)%len(self.images)]
             else:
                 self.image = self.original_image
@@ -159,9 +158,9 @@ def meteor_spwan():
     meteor_spawn_timer = 1000
     #change event time
     if current_time % 100 == 0:
-        meteor_spawn_timer -= 250* (current_time//100)
+        meteor_spawn_timer -= 10*(current_time//100)
         if meteor_spawn_timer >= 1:
-            
+            print(meteor_spawn_timer)
             pygame.time.set_timer(meteor_event, meteor_spawn_timer)
 
 def restart():
