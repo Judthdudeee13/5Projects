@@ -1,8 +1,12 @@
 from settings import *
+from assets import AssetManager
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, groups, collision_sprites):
+    def __init__(self, pos, groups, collision_sprites, images):
         super().__init__(groups)
+        #images
+        self.frames = images
+        self.state, self.frame_index = 'down', 0
         self.image = pygame.image.load(join('Vampire survivor', 'images', 'player', 'down', '0.png')).convert_alpha()
         self.rect = self.image.get_frect(center = pos)
         self.hitbox_rect = self.rect.inflate(-60, -90)
@@ -14,6 +18,7 @@ class Player(pygame.sprite.Sprite):
         # grops
         self.collision_sprites = collision_sprites
 
+        
     def input(self):
         keys = pygame.key.get_pressed()
         self.direction.x = int(keys[pygame.K_d]) - int(keys[pygame.K_a])
@@ -41,6 +46,14 @@ class Player(pygame.sprite.Sprite):
                     if self.direction.y < 0:
                         self.hitbox_rect.top = sprite.rect.bottom
 
+    def animate(self, dt):
+        #get state
+
+        #animate
+        self.frame_index += 5 * dt
+        self.image = self.frames[self.state][int(self.frame_index) % len(self.frames[self.state])]
+
     def update(self, dt):
         self.input()
         self.move(dt)
+        self.animate(dt)

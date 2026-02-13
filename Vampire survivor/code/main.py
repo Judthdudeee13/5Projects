@@ -2,8 +2,9 @@
 from settings import *
 from player import Player
 from sprites import *
-from groups import All_sprites
+from groups import AllSprites
 from pytmx.util_pygame import load_pygame
+from assets import AssetManager
 
 from random import randint
 class Game:
@@ -16,9 +17,10 @@ class Game:
         self.running = True
 
         #groups
-        self.all_sprites = All_sprites()
+        self.all_sprites = AllSprites()
         self.collision_sprites = pygame.sprite.Group()
 
+        self.load_images()
         self.set_up()
 
         # sprites
@@ -30,15 +32,19 @@ class Game:
             Sprite((x * TILE_SIZE,y*TILE_SIZE), image, self.all_sprites)
 
         for obj in map.get_layer_by_name('Objects'):
-            Collsion_sprite((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
+            CollsionSprite((obj.x, obj.y), obj.image, (self.all_sprites, self.collision_sprites))
 
         for obj in map.get_layer_by_name('Collisions'):
-            Collsion_sprite((obj.x, obj.y), pygame.surface.Surface((obj.width, obj.height)), (self.collision_sprites))
+            CollsionSprite((obj.x, obj.y), pygame.surface.Surface((obj.width, obj.height)), (self.collision_sprites))
 
         
         for obj in map.get_layer_by_name('Entities'):
             if obj.name == 'Player':
-                self.player = Player((obj.x, obj.y), self.all_sprites, self.collision_sprites)
+                self.player = Player((obj.x, obj.y), self.all_sprites, self.collision_sprites, self.assets.get('Player'))
+
+    def load_images(self):
+        self.assets = AssetManager()
+        self.assets.load_images(join('Vampire survivor', 'images', 'player'), 'Player')
         
         
 

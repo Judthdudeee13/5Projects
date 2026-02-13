@@ -1,6 +1,6 @@
 from settings import *
 
-class All_sprites(pygame.sprite.Group):
+class AllSprites(pygame.sprite.Group):
     def __init__(self):
         super().__init__()
         self.window = pygame.display.get_surface()
