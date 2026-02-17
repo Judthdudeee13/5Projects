@@ -33,7 +33,7 @@ class Gun(pygame.sprite.Sprite):
     def get_direction(self):
         mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
         player_pos = pygame.Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2)
-        self.player_direction = (mouse_pos-player_pos).normalize()
+        self.player_direction = (mouse_pos-player_pos).normalize() if (mouse_pos-player_pos) else self.player_direction
 
     def rotate_gun(self):
         angle = degrees(atan2(self.player_direction.x, self.player_direction.y)) - 90
@@ -60,7 +60,7 @@ class Gun(pygame.sprite.Sprite):
         self.rect.center = self.player.rect.center + self.player_direction * self.distance
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, gun, groups, image, collision_sprites):
+    def __init__(self, gun, groups, image, collision_sprites, enemy_sprites):
         self.gun = gun
         super().__init__(groups)
         self.direction = self.gun.player_direction
@@ -74,6 +74,7 @@ class Bullet(pygame.sprite.Sprite):
         self.spawn_time = pygame.time.get_ticks()
         self.lifetime = 2000
         self.collision_sprites = collision_sprites
+        self.enemy_sprites = enemy_sprites
 
     def update(self, dt):
         self.rect.center += self.direction*self.speed*dt
@@ -86,11 +87,12 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, pos, enemies, groups, player, collision_sprites):
+    def __init__(self, pos, enemies, groups, player, collision_sprites, bullet_sprites):
         super().__init__(groups)
         self.player = player
         types = ['bat', 'blob', 'skeleton']
         frames = enemies[random.choice(types)]
+        self.bullet_sprites = bullet_sprites
 
         #image
         self.frames, self.frame_index = frames, 0
@@ -105,7 +107,7 @@ class Enemy(pygame.sprite.Sprite):
     def move(self, dt):
         player_pos = pygame.Vector2(self.player.rect.center)
         enemy_pos = pygame.Vector2(self.rect.center)
-        self.direction = (player_pos - enemy_pos).normalize()
+        self.direction = (player_pos - enemy_pos).normalize() if (player_pos - enemy_pos) else self.direction
         self.hitbox_rect.x += self.direction.x * self.speed * dt
         self.collision('horizontal')
         self.hitbox_rect.y += self.direction.y * self.speed * dt
@@ -125,6 +127,11 @@ class Enemy(pygame.sprite.Sprite):
                         self.hitbox_rect.bottom = sprite.rect.top
                     if self.direction.y < 0:
                         self.hitbox_rect.top = sprite.rect.bottom
+    def hit(self):
+        for sprite in self.bullet_sprites:
+            if self.hitbox_rect.colliderect(sprite.rect):
+                self.kill()
+                sprite.kill()
 
     def animate(self, dt):
         #animate
@@ -132,5 +139,6 @@ class Enemy(pygame.sprite.Sprite):
         self.image = self.frames[int(self.frame_index) % len(self.frames)]
 
     def update(self, dt):
+        self.hit()
         self.move(dt)
         self.animate(dt)

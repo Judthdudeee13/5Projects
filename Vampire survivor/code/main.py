@@ -10,7 +10,7 @@ class Game:
     def __init__(self):
         #setup
         pygame.init()
-        self.window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        self.window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.FULLSCREEN)
         pygame.display.set_caption('Survivor')
         self.clock = pygame.time.Clock()
         self.running = True
@@ -32,10 +32,9 @@ class Game:
 
     def input(self):
         if pygame.mouse.get_pressed()[0] and self.gun.can_shoot:
-            Bullet(self.gun, (self.all_sprites, self.bullet_sprites), self.assets.get('Gun')['bullet'][0], self.collision_sprites)
+            Bullet(self.gun, (self.all_sprites, self.bullet_sprites), self.assets.get('Gun')['bullet'][0], self.collision_sprites, self.enemy_sprites)
             self.gun.shoot()
             
-
     def set_up(self):
         map = load_pygame(join('vampire survivor', 'data', 'maps', 'world.tmx'))
         for x, y, image in map.get_layer_by_name('Ground').tiles():
@@ -55,8 +54,6 @@ class Game:
             if obj.name == 'Enemy':
                 self.spawn_postitions.append((obj.x, obj.y))
 
-        
-
     def load_images(self):
         self.assets = AssetManager()
         self.assets.load_images(join('Vampire survivor', 'images', 'player'), 'Player')
@@ -72,9 +69,14 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
 
                 if event.type == self.enemy_event:
-                    Enemy(random.choice(self.spawn_postitions), self.assets.get('Enemies'), (self.all_sprites, self.enemy_sprites), self.player, self.collision_sprites)
+                    Enemy(random.choice(self.spawn_postitions), self.assets.get('Enemies'), (self.all_sprites, self.enemy_sprites), self.player, self.collision_sprites, self.bullet_sprites)
+                
+                
 
             #updatew
             self.input()
