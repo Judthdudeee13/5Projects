@@ -104,6 +104,10 @@ class Enemy(pygame.sprite.Sprite):
         self.direction = pygame.Vector2()
         self.speed = 350
 
+        #timer
+        self.death_time = 0
+        self.death_duration = 400
+
     def move(self, dt):
         player_pos = pygame.Vector2(self.player.rect.center)
         enemy_pos = pygame.Vector2(self.rect.center)
@@ -127,18 +131,39 @@ class Enemy(pygame.sprite.Sprite):
                         self.hitbox_rect.bottom = sprite.rect.top
                     if self.direction.y < 0:
                         self.hitbox_rect.top = sprite.rect.bottom
+   
     def hit(self):
         for sprite in self.bullet_sprites:
             if self.hitbox_rect.colliderect(sprite.rect):
-                self.kill()
+                self.destroy()
                 sprite.kill()
+
+    def destroy(self):
+        self.death_time = pygame.time.get_ticks()
+        surf = pygame.mask.from_surface(self.frames[0]).to_surface()
+        surf.set_colorkey('black')
+        self.image = surf
+
 
     def animate(self, dt):
         #animate
         self.frame_index += self.animation_speed * dt
         self.image = self.frames[int(self.frame_index) % len(self.frames)]
 
+    def death_timer(self):
+        current_time = pygame.time.get_ticks() - self.death_time
+        if current_time >= self.death_duration:
+            self.kill()
+        if 25 <= current_time % 100 < 75:
+            self.image = self.frames[0]
+        else:
+            surf = pygame.mask.from_surface(self.frames[0]).to_surface()
+            surf.set_colorkey('black')
+            self.image = surf
     def update(self, dt):
-        self.hit()
-        self.move(dt)
-        self.animate(dt)
+        if self.death_time == 0:
+            self.hit()
+            self.move(dt)
+            self.animate(dt)
+        else:
+            self.death_timer()

@@ -3,6 +3,7 @@ from settings import *
 class AssetManager:
     def __init__(self):
         self.images = {}
+        self.audio = {}
 
     def load_images(self, base_path, entity_name):
         frames = {}
@@ -31,3 +32,12 @@ class AssetManager:
 
     def get(self, entity):
         return self.images[entity]
+    
+    def load_audio(self, file_path, volume, name):
+        self.audio[name] = []
+        audio = pygame.mixer.Sound(file_path)
+        audio.set_volume(volume/100)
+        self.audio[name].append(audio)
+
+    def play_audio(self, name, duration):
+        self.audio[name].play(duration)

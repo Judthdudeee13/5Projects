@@ -10,7 +10,7 @@ class Game:
     def __init__(self):
         #setup
         pygame.init()
-        self.window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), pygame.FULLSCREEN)
+        self.window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         pygame.display.set_caption('Survivor')
         self.clock = pygame.time.Clock()
         self.running = True
@@ -27,7 +27,9 @@ class Game:
         pygame.time.set_timer(self.enemy_event, 500)
         self.spawn_postitions = []
 
+
         self.load_images()
+        self.load_audio()
         self.set_up()
 
     def input(self):
@@ -60,6 +62,11 @@ class Game:
         self.assets.load_images(join('Vampire survivor', 'images', 'gun'), 'Gun')
         self.assets.load_images(join('Vampire survivor', 'images', 'enemies'), 'Enemies')
 
+    def load_audio(self):
+        self.assets.load_audio(join('Vampire survivor', 'audio', 'impact.ogg'), 100)
+        self.assets.load_audio(join('Vampire survivor', 'audio', 'music.wav'), 40)
+        self.assets.load_audio(join('Vampire survivor', 'audio', 'impact.ogg'), 50)
+
     def run(self):
         while self.running:
             # dt
@@ -71,7 +78,7 @@ class Game:
                     self.running = False
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        running = False
+                        self.running = False
 
                 if event.type == self.enemy_event:
                     Enemy(random.choice(self.spawn_postitions), self.assets.get('Enemies'), (self.all_sprites, self.enemy_sprites), self.player, self.collision_sprites, self.bullet_sprites)
