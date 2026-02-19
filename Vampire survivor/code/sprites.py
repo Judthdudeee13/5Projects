@@ -18,7 +18,7 @@ class Gun(pygame.sprite.Sprite):
     def __init__(self, player, groups, image):
         #player connection 
         self.player = player
-        self.distance = 140
+        self.distance = 140*SCALE
         self.player_direction = pygame.Vector2(1, 0)
 
         # sprite setup
@@ -64,11 +64,11 @@ class Bullet(pygame.sprite.Sprite):
         self.gun = gun
         super().__init__(groups)
         self.direction = self.gun.player_direction
-        self.speed = 1200
+        self.speed = 1200*SCALE
         self.bullet_surf = image
         angle = degrees(atan2(self.direction.x, self.direction.y))
         self.image = pygame.transform.rotozoom(self.bullet_surf, angle, 1)
-        pos = self.gun.rect.center + self.direction * 50
+        pos = self.gun.rect.center + self.direction * 50*SCALE
         self.rect = self.image.get_frect(center = pos)
 
         self.spawn_time = pygame.time.get_ticks()
@@ -87,7 +87,7 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, pos, enemies, groups, player, collision_sprites, bullet_sprites):
+    def __init__(self, pos, enemies, groups, player, collision_sprites, bullet_sprites, music):
         super().__init__(groups)
         self.player = player
         types = ['bat', 'blob', 'skeleton']
@@ -99,14 +99,17 @@ class Enemy(pygame.sprite.Sprite):
         self.image = self.frames[self.frame_index]
         self.animation_speed = 6
         self.rect = self.image.get_frect(center = pos)
-        self.hitbox_rect = self.rect.inflate(-20, -40)
+        self.hitbox_rect = self.rect.inflate(-20*SCALE, -40*SCALE)
         self.collision_sprites = collision_sprites
         self.direction = pygame.Vector2()
-        self.speed = 350
+        self.speed = 350*SCALE
 
         #timer
         self.death_time = 0
         self.death_duration = 400
+
+        #music
+        self.sounds = music
 
     def move(self, dt):
         player_pos = pygame.Vector2(self.player.rect.center)
@@ -135,6 +138,7 @@ class Enemy(pygame.sprite.Sprite):
     def hit(self):
         for sprite in self.bullet_sprites:
             if self.hitbox_rect.colliderect(sprite.rect):
+                self.sounds('Hit')
                 self.destroy()
                 sprite.kill()
 

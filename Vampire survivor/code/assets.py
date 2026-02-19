@@ -19,6 +19,7 @@ class AssetManager:
                             for file_name in sorted(file_names, key= lambda name: int(name.split('.')[0])):
                                 full_path = join(folder_path, file_name)
                                 surf = pygame.image.load(full_path).convert_alpha()
+                                surf = pygame.transform.scale(surf, (int(surf.get_width() * SCALE), int(surf.get_height() * SCALE)))
                                 frames[state].append(surf)
         else:
             for folder_path, sub_folders, file_names in walk(base_path):
@@ -27,6 +28,7 @@ class AssetManager:
                         frames[file_name.split('.')[0]] = []
                         full_path = join(folder_path, file_name)
                         surf = pygame.image.load(full_path).convert_alpha()
+                        surf = pygame.transform.scale(surf, (int(surf.get_width() * SCALE), int(surf.get_height() * SCALE)))
                         frames[file_name.split('.')[0]].append(surf)
         self.images[entity_name] = frames
 
@@ -34,10 +36,19 @@ class AssetManager:
         return self.images[entity]
     
     def load_audio(self, file_path, volume, name):
-        self.audio[name] = []
         audio = pygame.mixer.Sound(file_path)
         audio.set_volume(volume/100)
-        self.audio[name].append(audio)
+        self.audio[name] = audio
 
-    def play_audio(self, name, duration):
+    def play_audio(self, name, duration=0):
         self.audio[name].play(duration)
+
+    def load_music(self, path):
+        pygame.mixer.music.load(path)
+
+    def play_music(self, loops=-1, volume=0.5, fade_ms=0):
+        pygame.mixer.music.set_volume(volume)
+        pygame.mixer.music.play(loops=loops, fade_ms=fade_ms)
+
+    def stop_music(self, fade_ms=0):
+        pygame.mixer.music.fadeout(fade_ms)

@@ -13,7 +13,7 @@ class Player(pygame.sprite.Sprite):
 
         #movement
         self.direction = pygame.Vector2()
-        self.speed = 500
+        self.speed = 500 *SCALE
 
         # grops
         self.collision_sprites = collision_sprites
