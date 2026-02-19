@@ -3,6 +3,7 @@ from settings import *
 from player import Player
 from sprites import *
 from groups import AllSprites
+from ui import *
 from pytmx.util_pygame import load_pygame
 from assets import AssetManager
 
@@ -32,6 +33,8 @@ class Game:
         self.load_audio()
         self.assets.play_music()
         self.set_up()
+
+        self.Game_over = GameOver(self.player, self.window)
 
     def input(self):
         if pygame.mouse.get_pressed()[0] and self.gun.can_shoot:
@@ -84,19 +87,21 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         self.running = False
 
-                if event.type == self.enemy_event:
+                if event.type == self.enemy_event and self.player.is_alive:
                     Enemy(random.choice(self.spawn_postitions), self.assets.get('Enemies'), (self.all_sprites, self.enemy_sprites), self.player, self.collision_sprites, self.bullet_sprites, self.assets.play_audio)
-                
-                
-
-            #updatew
-            self.input()
-            self.all_sprites.update(dt)
-                    
-            #draw
-            self.window.fill('black')
-            self.all_sprites.draw(self.player.rect.center)
+            if self.player.is_alive:
+                #updatew
+                self.input()
+                self.all_sprites.update(dt)
+                        
+                #draw
+                self.all_sprites.draw(self.player.rect.center)
+            else:
+                self.Game_over.game_over()
+                for sprite in self.enemy_sprites:
+                    sprite.kill()
             pygame.display.flip()
+            
         pygame.quit()
 
 if __name__ == '__main__':

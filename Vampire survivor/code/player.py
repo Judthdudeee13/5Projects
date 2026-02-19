@@ -18,6 +18,7 @@ class Player(pygame.sprite.Sprite):
         # grops
         self.collision_sprites = collision_sprites
 
+        self.is_alive = True
         
     def input(self):
         keys = pygame.key.get_pressed()
@@ -64,3 +65,5 @@ class Player(pygame.sprite.Sprite):
         self.input()
         self.move(dt)
         self.animate(dt)
+        # if self.direction:
+        #     self.is_alive = False
