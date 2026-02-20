@@ -72,7 +72,7 @@ class Game:
     def load_audio(self):
         self.assets.load_audio(join('Vampire survivor', 'audio', 'impact.ogg'), 100, 'Hit')
         self.assets.load_audio(join('Vampire survivor', 'audio', 'shoot.wav'), 25, 'Shoot')
-        self.assets.load_music(join("Vampire survivor", "Audio", "music.mp3"))
+        self.assets.load_music(join("Vampire survivor", "Audio", "music_epic.mp3"))
 
     def run(self):
         while self.running:

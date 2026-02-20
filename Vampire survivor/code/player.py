@@ -18,8 +18,14 @@ class Player(pygame.sprite.Sprite):
         # grops
         self.collision_sprites = collision_sprites
 
+        #health
         self.is_alive = True
-        
+        self.health = 100
+
+
+    def recive_damage(self, damage):
+        self.health -= damage
+
     def input(self):
         keys = pygame.key.get_pressed()
         self.direction.x = int(keys[pygame.K_d]) - int(keys[pygame.K_a])
@@ -65,5 +71,15 @@ class Player(pygame.sprite.Sprite):
         self.input()
         self.move(dt)
         self.animate(dt)
-        # if self.direction:
-        #     self.is_alive = False
+        if self.health <= 0:
+            self.is_alive = False
+
+class Health(pygame.sprite.Sprite):
+    def __init__(self, groups, player):
+        super().__init__(groups)
+        self.player = player
+        self.image = pygame.Surface((10*SCALE, 100*SCALE))
+        self.rect = self.health_bar.get_frect(bottomright = (WINDOW_WIDTH-10*SCALE, WINDOW_HEIGHT-10*SCALE))
+
+    def update(self, dt):
+        self.image = pygame.transform.scale(self.image, (-1*SCALE, 0))

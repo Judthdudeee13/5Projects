@@ -111,6 +111,12 @@ class Enemy(pygame.sprite.Sprite):
         #music
         self.sounds = music
 
+        #attack
+        self.damage = 1
+        self.can_attack = True
+        self.attack_cooldown = 500
+        self.attack_time = 0
+
     def move(self, dt):
         player_pos = pygame.Vector2(self.player.rect.center)
         enemy_pos = pygame.Vector2(self.rect.center)
@@ -148,6 +154,13 @@ class Enemy(pygame.sprite.Sprite):
         surf.set_colorkey('black')
         self.image = surf
 
+    def attack(self):
+        if self.hitbox_rect.colliderect(self.player.hitbox_rect) and self.can_attack:
+            self.player.recive_damage(self.damage)
+            self.attack_time = pygame.time.get_ticks()
+            self.can_attack = False
+        if pygame.time.get_ticks() - self.attack_time >= self.attack_cooldown:
+            self.can_attack = True
 
     def animate(self, dt):
         #animate
@@ -164,10 +177,12 @@ class Enemy(pygame.sprite.Sprite):
             surf = pygame.mask.from_surface(self.frames[0]).to_surface()
             surf.set_colorkey('black')
             self.image = surf
+    
     def update(self, dt):
         if self.death_time == 0:
             self.hit()
             self.move(dt)
             self.animate(dt)
+            self.attack()
         else:
             self.death_timer()
