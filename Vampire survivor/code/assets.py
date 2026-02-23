@@ -4,6 +4,7 @@ class AssetManager:
     def __init__(self):
         self.images = {}
         self.audio = {}
+        self.fonts = {}
 
     def load_images(self, base_path, entity_name):
         frames = {}
@@ -52,3 +53,9 @@ class AssetManager:
 
     def stop_music(self, fade_ms=0):
         pygame.mixer.music.fadeout(fade_ms)
+
+    def load_font(self, file_path, name, size):
+        self.fonts[name] = pygame.font.Font(file_path, int(size*SCALE))
+        
+    def get_font(self, name):
+        return self.fonts[name]

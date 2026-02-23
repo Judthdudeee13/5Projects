@@ -1,6 +1,6 @@
 #video 4:42:00
 from settings import *
-from player import Player
+from player import *
 from sprites import *
 from groups import AllSprites
 from ui import *
@@ -20,6 +20,7 @@ class Game:
 
         #groups
         self.all_sprites = AllSprites()
+        self.ui = pygame.sprite.Group()
         self.collision_sprites = pygame.sprite.Group()
         self.bullet_sprites = pygame.sprite.Group()
         self.enemy_sprites = pygame.sprite.Group()
@@ -31,10 +32,11 @@ class Game:
 
         self.load_images()
         self.load_audio()
+        self.load_fonts()
         self.assets.play_music()
         self.set_up()
 
-        self.Game_over = GameOver(self.player, self.window)
+        self.Game_over = GameOver(self.player, self.window, self.assets)
 
     def input(self):
         if pygame.mouse.get_pressed()[0] and self.gun.can_shoot:
@@ -59,6 +61,7 @@ class Game:
             if obj.name == 'Player':
                 self.player = Player((obj.x*SCALE, obj.y*SCALE), self.all_sprites, self.collision_sprites, self.assets.get('Player'))
                 self.gun = Gun(self.player, self.all_sprites, self.assets.get('Gun'))
+                self.health_bar = Health(self.ui, self.player)
 
             if obj.name == 'Enemy':
                 self.spawn_postitions.append((obj.x*SCALE, obj.y*SCALE))
@@ -73,6 +76,9 @@ class Game:
         self.assets.load_audio(join('Vampire survivor', 'audio', 'impact.ogg'), 100, 'Hit')
         self.assets.load_audio(join('Vampire survivor', 'audio', 'shoot.wav'), 25, 'Shoot')
         self.assets.load_music(join("Vampire survivor", "Audio", "music_epic.mp3"))
+
+    def load_fonts(self):
+        self.assets.load_font(join('Vampire survivor', 'data', 'fonts', 'PressStart2p.ttf'), 'Game Over', 100)
 
     def run(self):
         while self.running:
@@ -93,9 +99,11 @@ class Game:
                 #updatew
                 self.input()
                 self.all_sprites.update(dt)
+                self.ui.update(dt)
                         
                 #draw
                 self.all_sprites.draw(self.player.rect.center)
+                self.ui.draw(self.window)
             else:
                 self.Game_over.game_over()
                 for sprite in self.enemy_sprites:

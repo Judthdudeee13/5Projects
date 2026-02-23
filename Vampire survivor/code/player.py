@@ -21,6 +21,7 @@ class Player(pygame.sprite.Sprite):
         #health
         self.is_alive = True
         self.health = 100
+        self.max_health = 100
 
 
     def recive_damage(self, damage):
@@ -77,9 +78,19 @@ class Player(pygame.sprite.Sprite):
 class Health(pygame.sprite.Sprite):
     def __init__(self, groups, player):
         super().__init__(groups)
+
         self.player = player
-        self.image = pygame.Surface((10*SCALE, 100*SCALE))
-        self.rect = self.health_bar.get_frect(bottomright = (WINDOW_WIDTH-10*SCALE, WINDOW_HEIGHT-10*SCALE))
+        self.max_width = 500      # ← make this bigger
+        self.height = 50          # ← make this bigger
+        self.max_health = player.max_health
+
+        self.image = pygame.Surface((self.max_width, self.height))
+        self.rect = self.image.get_frect(topleft = (20*SCALE, 20*SCALE))
 
     def update(self, dt):
-        self.image = pygame.transform.scale(self.image, (-1*SCALE, 0))
+        self.image.fill("#333333")  # background
+
+        health_ratio = self.player.health / self.max_health
+        current_width = self.max_width * health_ratio
+
+        pygame.draw.rect(self.image, "red", (0, 0, current_width, self.height))

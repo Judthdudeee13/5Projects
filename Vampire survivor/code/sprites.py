@@ -112,7 +112,7 @@ class Enemy(pygame.sprite.Sprite):
         self.sounds = music
 
         #attack
-        self.damage = 1
+        self.damage = 2
         self.can_attack = True
         self.attack_cooldown = 500
         self.attack_time = 0
