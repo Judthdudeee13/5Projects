@@ -71,6 +71,7 @@ class Game:
         self.assets.load_images(join('Vampire survivor', 'images', 'player'), 'Player')
         self.assets.load_images(join('Vampire survivor', 'images', 'gun'), 'Gun')
         self.assets.load_images(join('Vampire survivor', 'images', 'enemies'), 'Enemies')
+        self.assets.load_images(join('Vampire survivor', 'images', 'buttons'), 'Game Over')
 
     def load_audio(self):
         self.assets.load_audio(join('Vampire survivor', 'audio', 'impact.ogg'), 100, 'Hit')

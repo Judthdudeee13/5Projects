@@ -10,6 +10,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.image.load(join('Vampire survivor', 'images', 'player', 'down', '0.png')).convert_alpha()
         self.rect = self.image.get_frect(center = pos)
         self.hitbox_rect = self.rect.inflate(-60, -90)
+        self.start_pos = pos
 
         #movement
         self.direction = pygame.Vector2()
@@ -67,6 +68,12 @@ class Player(pygame.sprite.Sprite):
         else:
             self.frame_index = 0
         self.image = self.frames[self.state][int(self.frame_index) % len(self.frames[self.state])]
+
+    def restart(self):
+        self.hitbox_rect.center = self.start_pos
+        self.rect.center = self.start_pos
+        self.health = self.max_health
+        self.is_alive = True
 
     def update(self, dt):
         self.input()
