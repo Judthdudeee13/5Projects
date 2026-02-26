@@ -9,7 +9,7 @@ class Player(pygame.sprite.Sprite):
         self.state, self.frame_index = 'down', 0
         self.image = pygame.image.load(join('Vampire survivor', 'images', 'player', 'down', '0.png')).convert_alpha()
         self.rect = self.image.get_frect(center = pos)
-        self.hitbox_rect = self.rect.inflate(-60, -90)
+        self.hitbox_rect = self.rect.inflate(-60, -50)
         self.start_pos = pos
 
         #movement

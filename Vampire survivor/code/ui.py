@@ -18,7 +18,7 @@ class GameOver:
         mouse_pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(mouse_pos):
             self.image = self.images[1]
-        if pygame.mouse.get_pressed()[0]:
+        if pygame.mouse.get_just_pressed()[0]:
             return True
         else:
             return False

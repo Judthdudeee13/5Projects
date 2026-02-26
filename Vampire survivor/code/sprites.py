@@ -91,7 +91,8 @@ class Enemy(pygame.sprite.Sprite):
         super().__init__(groups)
         self.player = player
         types = ['bat', 'blob', 'skeleton']
-        frames = enemies[random.choice(types)]
+        self.type = random.choice(types)
+        frames = enemies[self.type]
         self.bullet_sprites = bullet_sprites
 
         #image
@@ -102,7 +103,10 @@ class Enemy(pygame.sprite.Sprite):
         self.hitbox_rect = self.rect.inflate(-20*SCALE, -40*SCALE)
         self.collision_sprites = collision_sprites
         self.direction = pygame.Vector2()
-        self.speed = 350*SCALE
+        if self.type == 'bat':
+            self.speed = 399*SCALE
+        else:
+            self.speed = 350*SCALE
 
         #timer
         self.death_time = 0
@@ -112,7 +116,10 @@ class Enemy(pygame.sprite.Sprite):
         self.sounds = music
 
         #attack
-        self.damage = 2
+        if self.type == 'skeleton':
+            self.damage = 10
+        else:
+            self.damage = 2
         self.can_attack = True
         self.attack_cooldown = 500
         self.attack_time = 0
@@ -128,18 +135,19 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.center = self.hitbox_rect.center
 
     def collision(self, direction):
-        for sprite in self.collision_sprites:
-            if sprite.rect.colliderect(self.hitbox_rect):
-                if direction == 'horizontal':
-                    if self.direction.x > 0:
-                        self.hitbox_rect.right = sprite.rect.left
-                    if self.direction.x < 0:
-                        self.hitbox_rect.left = sprite.rect.right
-                if direction == 'vertical':
-                    if self.direction.y > 0:
-                        self.hitbox_rect.bottom = sprite.rect.top
-                    if self.direction.y < 0:
-                        self.hitbox_rect.top = sprite.rect.bottom
+        if self.type != 'blob':
+            for sprite in self.collision_sprites:
+                if sprite.rect.colliderect(self.hitbox_rect):
+                    if direction == 'horizontal':
+                        if self.direction.x > 0:
+                            self.hitbox_rect.right = sprite.rect.left
+                        if self.direction.x < 0:
+                            self.hitbox_rect.left = sprite.rect.right
+                    if direction == 'vertical':
+                        if self.direction.y > 0:
+                            self.hitbox_rect.bottom = sprite.rect.top
+                        if self.direction.y < 0:
+                            self.hitbox_rect.top = sprite.rect.bottom
    
     def hit(self):
         for sprite in self.bullet_sprites:
@@ -155,7 +163,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image = surf
 
     def attack(self):
-        if self.hitbox_rect.colliderect(self.player.hitbox_rect) and self.can_attack:
+        if self.rect.colliderect(self.player.hitbox_rect) and self.can_attack:
             self.player.recive_damage(self.damage)
             self.attack_time = pygame.time.get_ticks()
             self.can_attack = False
