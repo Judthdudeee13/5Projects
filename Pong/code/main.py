@@ -21,7 +21,15 @@ class Game:
         self.paddle_sprites = pygame.sprite.Group()
 
         self.player = Player((self.all_sprites, self.paddle_sprites), POS['player'])
+        self.ball = Ball(self.all_sprites, self.paddle_sprites)
+        self.opponet = Opponent((self.all_sprites, self.paddle_sprites), POS['opponent'], self.ball)
 
+        #score
+        self.score = {'player' : 0, 'opponent': 0}
+
+    def display_score(self):
+        pass
+        
     def run(self):
         while self.running:
             dt = self.clock.tick() / 1000
