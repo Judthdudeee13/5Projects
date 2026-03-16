@@ -18,7 +18,7 @@ class Game:
         self.setup()
     
     def setup(self):
-        tmx_map = load_pygame(join('platform', 'data', 'maps', 'world.tmx'))
+        tmx_map = load_pygame(join('Platform', 'data', 'maps', 'world.tmx'))
 
         for x, y, image, in tmx_map.get_layer_by_name('Main').tiles():
             Sprite((x*TILE_SIZE,y*TILE_SIZE), image, (self.all_sprites, self.collision_sprites))
