@@ -10,10 +10,6 @@ class Game:
         pygame.display.set_caption('Pong')
         self.clock = pygame.time.Clock()
 
-
-        #groups
-        self.all_sprites = pygame.sprite.Group()
-
         #variables
         self.running = True
 
