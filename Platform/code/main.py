@@ -17,6 +17,7 @@ class Game:
         # groups 
         self.all_sprites = AllSprites()
         self.collision_sprites = pygame.sprite.Group()
+        self.enemy_sprites = pygame.sprite.Group()
 
         #load game
         self.load_assets()
@@ -48,6 +49,10 @@ class Game:
         for obj in tmx_map.get_layer_by_name('Entities'):
             if obj.name == 'Player':
                 self.player = Player((obj.x, obj.y), self.all_sprites, self.collision_sprites, self.assets.load_asset('Player'))
+
+        Bee((500, 600), self.assets.load_asset('Bee'), (self.all_sprites, self.enemy_sprites))
+        Worm((700, 600), self.assets.load_asset('Worm'), (self.all_sprites, self.enemy_sprites))
+
 
     def run(self):
         while self.running:
