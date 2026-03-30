@@ -1,5 +1,5 @@
 from settings import *
-from timer import Timer
+from Platform.code.timer import Timer
 
 class Sprite(pygame.sprite.Sprite):
     def __init__(self, pos, surf, groups):
