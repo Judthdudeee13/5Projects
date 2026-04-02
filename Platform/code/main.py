@@ -32,8 +32,9 @@ class Game:
         Bee(((randint(300, 600)), (randint(300, 600))), self.assets.load_asset('Bee'), (self.all_sprites, self.enemy_sprites))
 
     def create_bullet(self, pos, direction):
-        Bullet(self.assets.load_asset('Bullet'), pos, direction, (self.all_sprites, self.bullet_sprites))
-        
+        x = pos[0] + direction * 33 if direction == 1 else pos[0] + direction * 33 - self.assets.load_asset('Bullet').get_width()
+        Bullet(self.assets.load_asset('Bullet'), (x, pos[1]), direction, (self.all_sprites, self.bullet_sprites))
+        Fire(self.assets.load_asset('Fire'), pos, self.all_sprites, self.player)
 
     def load_assets(self):
         #graphicss

@@ -11,12 +11,39 @@ class Bullet(Sprite):
     def __init__(self, surf, pos, direction, groups):
         super().__init__(pos, surf, groups)
 
+        #ajusment
+        self.image = pygame.transform.flip(self.image, direction == -1, False)
+
         #movement
         self.direction = direction
-        self.speed = 500
+        self.speed = 850
 
     def update(self, dt):
         self.rect.x += self.direction *self.speed*dt
+
+class Fire(Sprite):
+    def __init__(self, surf, pos, groups, player):
+        super().__init__(pos, surf, groups)
+        self.player = player
+        self.flip = player.flip
+        self.timer = Timer(100, autostart = True, func = self.kill) 
+        self.y_offset = pygame.Vector2(0, 8)
+        if self.player.flip:
+            self.rect.midright = self.player.rect.midleft + self.y_offset
+            self.image = pygame.transform.flip(self.image, True, False)
+        else:
+            self.rect.midleft = self.player.rect.midright + self.y_offset
+
+    def update(self, _):
+        self.timer.update()
+
+        if self.player.flip:
+            self.rect.midright = self.player.rect.midleft + self.y_offset
+        else:
+            self.rect.midleft = self.player.rect.midright + self.y_offset
+
+        if self.flip != self.player.flip:
+            self.kill()
 
 class AnimatedSprite(Sprite):
     def __init__(self, frames, pos, groups):
@@ -56,15 +83,15 @@ class Player(AnimatedSprite):
         self.on_floor = False
 
         # timer
-        self.shoot_timer = Timer(500)
+        self.shoot_timer = Timer(200)
 
     def input(self):
         keys = pygame.key.get_pressed()
         self.direction.x = int(keys[pygame.K_d]) - int(keys[pygame.K_a])
         if keys[pygame.K_SPACE] and self.on_floor:
             self.direction.y = - 20
-
-        if keys[pygame.K_s] and not self.shoot_timer:
+        mouse_buttons = pygame.mouse.get_pressed()
+        if mouse_buttons[0] and not self.shoot_timer:
             self.create_bullet(self.rect.center, -1 if self.flip else 1)
             self.shoot_timer.activate()
 
