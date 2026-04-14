@@ -29,7 +29,7 @@ class Game:
         self.bee_timer = Timer(1000, func = self.create_bee, autostart = True, repeat = True)
         
     def create_bee(self):
-        Bee(((randint(300, 600)), (randint(300, 600))), self.assets.load_asset('Bee'), (self.all_sprites, self.enemy_sprites))
+        Bee(((randint(300, 600)), (randint(300, 600))), self.assets.load_asset('Bee'), (self.all_sprites, self.enemy_sprites), randint(300, 500))
 
     def create_bullet(self, pos, direction):
         x = pos[0] + direction * 33 if direction == 1 else pos[0] + direction * 33 - self.assets.load_asset('Bullet').get_width()
