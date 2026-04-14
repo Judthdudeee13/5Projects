@@ -26,10 +26,15 @@ class Game:
         self.setup()
 
         #timers
-        self.bee_timer = Timer(1000, func = self.create_bee, autostart = True, repeat = True)
+        self.bee_timer = Timer(100, func = self.create_bee, autostart = True, repeat = True)
         
     def create_bee(self):
-        Bee(((randint(300, 600)), (randint(300, 600))), self.assets.load_asset('Bee'), (self.all_sprites, self.enemy_sprites), randint(300, 500))
+        Bee(
+            pos = ((self.level_width + WINDOW_WIDTH), (randint(0, self.level_width))), 
+            frames = self.assets.load_asset('Bee'), 
+            groups = (self.all_sprites, self.enemy_sprites), 
+            speed = randint(300, 500)
+            )
 
     def create_bullet(self, pos, direction):
         x = pos[0] + direction * 33 if direction == 1 else pos[0] + direction * 33 - self.assets.load_asset('Bullet').get_width()
@@ -51,6 +56,8 @@ class Game:
 
     def setup(self):
         tmx_map = load_pygame(join('Platform', 'data', 'maps', 'world.tmx'))
+        self.level_width = tmx_map.width*TILE_SIZE
+        self.window_height = tmx_map.width*TILE_SIZE
 
         for x, y, image, in tmx_map.get_layer_by_name('Main').tiles():
             Sprite((x*TILE_SIZE,y*TILE_SIZE), image, (self.all_sprites, self.collision_sprites))

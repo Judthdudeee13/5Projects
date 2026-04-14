@@ -1,5 +1,6 @@
 from settings import *
 from timer import Timer
+from math import sin
 
 class Sprite(pygame.sprite.Sprite):
     def __init__(self, pos, surf, groups):
@@ -61,14 +62,22 @@ class Enemy(AnimatedSprite):
     def update(self, dt):
         self.move(dt)
         self.animate(dt)
+        self.constraint()
 
 class Bee(Enemy):
     def __init__(self, pos, frames, groups, speed):
         super().__init__(frames, pos, groups)
         self.speed = speed
+        self.amplitude = randint(500, 600)
+        self.frequency = randint(300, 600)
 
     def move(self, dt):
         self.rect.x -= self.speed * dt
+        self.rect.y += sin(pygame.time.get_ticks()/self.frequency) * self.amplitude * dt
+
+    def constraint(self):
+        if self.rect.right <= 0:
+            self.kill()
 
 
 class Worm(Enemy):
@@ -76,6 +85,9 @@ class Worm(Enemy):
         super().__init__(frames, pos, groups)
 
     def move(self, dt):
+        pass
+
+    def constraint(self):
         pass
 
 
