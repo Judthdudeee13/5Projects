@@ -68,8 +68,8 @@ class Game:
         for obj in tmx_map.get_layer_by_name('Entities'):
             if obj.name == 'Player':
                 self.player = Player((obj.x, obj.y), self.all_sprites, self.collision_sprites, self.assets.load_asset('Player'), self.create_bullet)
-
-        Worm((700, 600), self.assets.load_asset('Worm'), (self.all_sprites, self.enemy_sprites))
+            if obj.name == 'Worm':
+                Worm(pygame.FRect(obj.x, obj.y, obj.width, obj.height), self.assets.load_asset('Worm'), (self.all_sprites, self.enemy_sprites))
 
 
     def run(self):

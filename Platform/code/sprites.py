@@ -81,14 +81,19 @@ class Bee(Enemy):
 
 
 class Worm(Enemy):
-    def __init__(self, pos, frames, groups):
-        super().__init__(frames, pos, groups)
+    def __init__(self, rect, frames, groups):
+        super().__init__(frames, rect.topleft, groups)
+        self.rect.bottomleft = rect.bottomleft
+        self.main_rect = rect
+        self.speed = randint(300, 500)
+        self.direction = 1
 
     def move(self, dt):
-        pass
+        self.rect.x += self.direction*self.speed*dt
 
     def constraint(self):
-        pass
+        if self.rect.right >= self.main_rect.right:
+            pass
 
 
 class Player(AnimatedSprite):
