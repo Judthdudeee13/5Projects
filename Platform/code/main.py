@@ -40,6 +40,7 @@ class Game:
         x = pos[0] + direction * 33 if direction == 1 else pos[0] + direction * 33 - self.assets.load_asset('Bullet').get_width()
         Bullet(self.assets.load_asset('Bullet'), (x, pos[1]), direction, (self.all_sprites, self.bullet_sprites))
         Fire(self.assets.load_asset('Fire'), pos, self.all_sprites, self.player)
+        self.assets.load_asset('Shoot').play()
 
     def load_assets(self):
         #graphicss
@@ -48,11 +49,11 @@ class Game:
         self.assets.import_image('Fire', 'Platform', 'images', 'gun', 'fire')        # Fire
         self.assets.import_folder('Bee', 'Platform', 'images', 'enemies', 'bee')     # Bee
         self.assets.import_folder('Worm', 'Platform', 'images', 'enemies', 'worm')   # worm
-        
+
         #sounds
-        self.assets.import_audio('Hit', 'ogg' 'Platform', 'audio', 'impact')         # Hit 
-        self.assets.import_audio('Shoot', 'ogg' 'Platform', 'audio', 'Shoot')        # Shoot
-        self.assets.import_audio('Music', 'ogg' 'Platform', 'audio', 'music')        # Music
+        self.assets.import_audio('Hit', 'ogg', 1, 'Platform', 'audio', 'impact')         # Hit 
+        self.assets.import_audio('Shoot', 'wav', 1, 'Platform', 'audio', 'Shoot')        # Shoot
+        self.assets.import_audio('Music', 'wav', 0.5, 'Platform', 'audio', 'music')        # Music
 
     def setup(self):
         tmx_map = load_pygame(join('Platform', 'data', 'maps', 'world.tmx'))
@@ -71,6 +72,17 @@ class Game:
             if obj.name == 'Worm':
                 Worm(pygame.FRect(obj.x, obj.y, obj.width, obj.height), self.assets.load_asset('Worm'), (self.all_sprites, self.enemy_sprites))
 
+        self.assets.load_asset('Music').play(loops = -1)
+
+    def collision(self):
+        # bullets -> enemies
+        for bullet in self.bullet_sprites:
+            sprite_collision = pygame.sprite.spritecollide(bullet, self.enemy_sprites, False, pygame.sprite.collide_mask)
+            if sprite_collision:
+                self.assets.load_asset('Hit').play()
+                bullet.kill()
+                for sprite in sprite_collision:
+                    sprite.destroy()
 
     def run(self):
         while self.running:
@@ -85,6 +97,7 @@ class Game:
                             self.running = False
             
             # update
+            self.collision()
             self.bee_timer.update()
             self.all_sprites.update(dt)
 

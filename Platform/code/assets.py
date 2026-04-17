@@ -17,8 +17,10 @@ class Assets:
                 frames.append(surf)
         self.assets[name] = frames
 
-    def import_audio(self, name, format, *path):
-        self.assets[name] = join(*path)+f'.{format}'
+    def import_audio(self, name, format, volume, *path):
+        full_path = join(*path)+f'.{format}'
+        self.assets[name] = pygame.mixer.Sound(full_path)
+        self.assets[name].set_volume(volume)
 
     def load_asset(self, name):
         return self.assets[name]
