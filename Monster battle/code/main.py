@@ -3,7 +3,8 @@ from support import *
 from timer import Timer
 from random import choice
 from monster import Monster, Opponent
-from ui import UI
+from ui import UI, OpponentUI
+from attack import AttackAnimationSprite
 
 class Game:
     def __init__(self):
@@ -28,6 +29,7 @@ class Game:
 
         #ui
         self.ui = UI(self.monster, self.player_monsters, self.simple_surfs, self.get_input)
+        self.opponent_ui = OpponentUI(self.opponent)
 
         # timers
         self.timers = {'player end': Timer(1000, func = self.oppoenent_turn), 'opponent end': Timer(1000, func = self.player_turn)}
@@ -37,6 +39,7 @@ class Game:
         self.bg_surfs = folder_importer('Monster battle', 'images', 'other')
         self.front_surfs = folder_importer('Monster battle', 'images', 'front')
         self.simple_surfs = folder_importer('Monster battle', 'images', 'simple')
+        self.attack_frames = tile_importer(4, 'Monster battle', 'images', 'attacks')
 
     def draw_monster_floor(self):
         for sprite in self.all_sprites:
@@ -47,7 +50,10 @@ class Game:
         if state == 'attack':
             self.apply_attack(self.opponent, data)
             
-        
+        elif state == 'heal':
+            self.monster.health += 50
+            AttackAnimationSprite(self.monster, self.attack_frames['green'], self.all_sprites)
+            
         elif state == 'escape':
             self.running = False
         
@@ -56,9 +62,9 @@ class Game:
 
     def apply_attack(self, target, attack):
         attack_data = ABILITIES_DATA[attack]
-
         target.health -= attack_data['damage']  * ELEMENT_DATA[attack_data['element']][target.element]
-        
+        AttackAnimationSprite(target, self.attack_frames[attack_data['animation']], self.all_sprites)
+
     def oppoenent_turn(self):
         attack = choice(self.opponent.abilities)
         self.apply_attack(self.monster, attack)
@@ -94,6 +100,7 @@ class Game:
             self.draw_monster_floor()
             self.all_sprites.draw(self.window)
             self.ui.draw()
+            self.opponent_ui.draw()
             pygame.display.update()
         
         pygame.quit()
