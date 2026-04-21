@@ -13,6 +13,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
         self.import_assets()
+        self.player_active = True
 
         # groups 
         self.all_sprites = pygame.sprite.Group()
@@ -26,17 +27,49 @@ class Game:
         self.opponent = Opponent(opponent_name, self.front_surfs[opponent_name], self.all_sprites)
 
         #ui
-        self.ui = UI(self.monster, self.player_monsters)
+        self.ui = UI(self.monster, self.player_monsters, self.simple_surfs, self.get_input)
+
+        # timers
+        self.timers = {'player end': Timer(1000, func = self.oppoenent_turn), 'opponent end': Timer(1000, func = self.player_turn)}
     
     def import_assets(self):
         self.back_surfaces = folder_importer('Monster battle', 'images', 'back')
         self.bg_surfs = folder_importer('Monster battle', 'images', 'other')
         self.front_surfs = folder_importer('Monster battle', 'images', 'front')
+        self.simple_surfs = folder_importer('Monster battle', 'images', 'simple')
 
     def draw_monster_floor(self):
         for sprite in self.all_sprites:
             floor_rect = self.bg_surfs['floor'].get_frect(center = sprite.rect.midbottom + pygame.Vector2(0, -10))
             self.window.blit(self.bg_surfs['floor'], floor_rect)
+
+    def get_input(self, state, data = None):
+        if state == 'attack':
+            self.apply_attack(self.opponent, data)
+            
+        
+        elif state == 'escape':
+            self.running = False
+        
+        self.player_active = False
+        self.timers['player end'].activate()
+
+    def apply_attack(self, target, attack):
+        attack_data = ABILITIES_DATA[attack]
+
+        target.health -= attack_data['damage']  * ELEMENT_DATA[attack_data['element']][target.element]
+        
+    def oppoenent_turn(self):
+        attack = choice(self.opponent.abilities)
+        self.apply_attack(self.monster, attack)
+        self.timers['opponent end'].activate()
+
+    def player_turn(self):
+        self.player_active = True
+
+    def update_timers(self):
+        for timer in self.timers.values():
+            timer.update()
 
     def run(self):
         while self.running:
@@ -50,8 +83,11 @@ class Game:
                             self.running = False
            
             # update
+            self.update_timers()
             self.all_sprites.update(dt)
-            self.ui.update()
+            if self.player_active:
+                self.ui.update() 
+           
 
             # draw 
             self.window.blit(self.bg_surfs['bg'], (0,0))

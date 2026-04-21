@@ -14,7 +14,10 @@ class Monster(pygame.sprite.Sprite, Creature):
         self.image = surf
         self.rect = self.image.get_frect(bottomleft = (100, WINDOW_HEIGHT))
         self.name = name
-        self.get_data(name)    
+        self.get_data(name) 
+
+    def __repr__(self):
+        return f'{self.name}: {self.health}/{self.max_health}'
 
 class Opponent(pygame.sprite.Sprite, Creature):
     def __init__(self, name, surf, groups):
