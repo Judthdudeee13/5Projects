@@ -44,7 +44,8 @@ class UI:
                 
         
         elif self.state == 'switch':
-            self.switch_index = (self.switch_index + int(keys[pygame.K_s]) - int(keys[pygame.K_w])) % len(self.availible_monsters)
+            if self.availible_monsters:
+                self.switch_index = (self.switch_index + int(keys[pygame.K_s]) - int(keys[pygame.K_w])) % len(self.availible_monsters)
             if keys[pygame.K_SPACE]:
                 self.get_input(self.state, self.availible_monsters[self.switch_index])
                 self.general_index = {'col': 0, 'row': 0}
@@ -61,7 +62,7 @@ class UI:
             
                 
 
-        if keys[pygame.K_LSHIFT]:
+        if keys[pygame.K_ESCAPE]:
             self.general_index = {'col': 0, 'row': 0}
             self.attack_index = {'col': 0, 'row': 0}
             self.switch_index = 0
@@ -133,6 +134,7 @@ class UI:
 
     def update(self):
         self.input()
+        self.availible_monsters = [monster for monster in self.player_monsters if monster != self.monster and monster.health > 0]
 
     def draw(self):
         match self.state:
